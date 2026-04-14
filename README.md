@@ -69,3 +69,32 @@ Directed tests cannot feasibly cover the combinatorial explosion of these intera
 
 ---
 
+## UVM Environment Architecture
+
+### Testbench Hierarchy
+
+```
+uvm_test (base_test / corner_case_test / stress_test)
+│
+└── uvm_env  (cpu_env)
+    │
+    ├── cpu_agent  (UVM_ACTIVE)
+    │   ├── cpu_sequencer
+    │   ├── cpu_driver         ──▶ DUT Interface (clk, rst, instr, mem_data)
+    │   └── cpu_monitor_in     ──▶ Captures driven stimulus
+    │
+    ├── cpu_monitor_out        ──▶ DUT Interface (reg_file, mem_wr, pc_out)
+    │
+    ├── cpu_scoreboard         ──▶ Self-checking vs. golden reference model
+    │   └── ref_model.sv       ──▶ Cycle-accurate ISA-level reference
+    │
+    ├── cpu_coverage           ──▶ Functional coverage collector
+    │   └── covergroups:
+    │       ├── instr_type_cg
+    │       ├── hazard_type_cg
+    │       ├── branch_outcome_cg
+    │       ├── reg_access_cg
+    │       └── mem_access_cg
+    │
+    └── cpu_virtual_sequencer  ──▶ Coordinates multiple sequences
+```
