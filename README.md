@@ -46,3 +46,26 @@ This environment solves that problem through:
 **Outcome: Verification mastery** — demonstrating professional-grade verification closure through coverage-driven verification (CDV) methodology.
 
 ---
+
+
+## Problem Statement
+
+A pipelined CPU exposes a class of bugs that only appear under specific sequences of instructions — sequences unlikely to arise in simple directed tests:
+
+| Bug Class | Example Corner Case |
+|---|---|
+| **Forwarding failure** | Back-to-back RAW with ALU→Load→ALU chain |
+| **Load-use stall escape** | LW followed immediately by dependent branch |
+| **Branch flush corruption** | Taken branch during a stall cycle |
+| **Write-back collision** | Two instructions writing the same register in adjacent cycles |
+| **Immediate sign-extension** | Negative immediates at 12-bit boundary (`0x800`) |
+| **ALU overflow/underflow** | SLTU with `rs1=0, rs2=0xFFFFFFFF` |
+| **PC misalignment** | JAL/JALR with non-word-aligned targets |
+| **x0 write immunity** | Any instruction targeting register `x0` must not alter it |
+| **NOP bubble propagation** | Bubbles (NOPs) flowing through all 5 stages cleanly |
+| **Reset state correctness** | All pipeline registers and PC cleared on assertion of reset |
+
+Directed tests cannot feasibly cover the combinatorial explosion of these interactions. A constrained-random UVM environment with functional coverage closure is the industry-standard solution.
+
+---
+
